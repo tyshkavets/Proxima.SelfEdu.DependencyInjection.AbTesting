@@ -3,7 +3,26 @@
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
+        <PackageId>Proxima.SelfEdu.DependencyInjection.AbTesting</PackageId>
+        <Version>1.0.0</Version>
+        <Authors>Siarhei Tyshkavets</Authors>
+        <Company>Siarhei Tyshkavets - Proxima Project</Company>
+        <PackageTags>dependency_injection ab_testing</PackageTags>
+        <Description>
+            Package made to allow for simple A/B testing for implementations of services in ASP.NET Core
+            dependency injection container.
+        </Description>
+        <RepositoryUrl>https://github.com/tyshkavets/Proxima.SelfEdu.DependencyInjection.AbTesting</RepositoryUrl>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="..\LICENSE;..\README.md" Pack="true" PackagePath="" />
+    </ItemGroup>
 
 </Project>
