@@ -5,12 +5,14 @@ namespace Proxima.SelfEdu.DependencyInjection.AbTesting;
 
 public class ExperimentContext<TService> where TService : class
 {
-    private readonly IServiceCollection _serviceCollection;
+    private readonly IServiceCollection _services;
+    private readonly ServiceLifetime _lifetime;
     private readonly IList<Type> _implementationTypes = new List<Type>();
 
-    public ExperimentContext(IServiceCollection serviceCollection)
+    public ExperimentContext(IServiceCollection services, ServiceLifetime lifetime)
     {
-        _serviceCollection = serviceCollection;
+        _services = services;
+        _lifetime = lifetime;
     }
 
     public ExperimentContext<TService> AddVariant<TImplementation>() where TImplementation : class, TService
@@ -26,19 +28,24 @@ public class ExperimentContext<TService> where TService : class
             return;
         }
 
-        _serviceCollection.AddScoped(sp =>
-        {
-            var random = new Random();
-            var pick = random.Next(_implementationTypes.Count);
-
-            if (Activity.Current != null)
+        var descriptor = new ServiceDescriptor(
+            typeof(TService),
+            sp =>
             {
-                var serviceName = typeof(TService).Name.ToLower();
-                var implementationName = _implementationTypes[pick].Name.ToLower();
-                Activity.Current.AddBaggage($"abtesting.variant.{serviceName}", implementationName);
-            }
-            
-            return (TService)ActivatorUtilities.CreateInstance(sp, _implementationTypes[pick]);
-        });
+                var random = new Random();
+                var pick = random.Next(_implementationTypes.Count);
+
+                if (Activity.Current != null)
+                {
+                    var serviceName = typeof(TService).Name.ToLower();
+                    var implementationName = _implementationTypes[pick].Name.ToLower();
+                    Activity.Current.AddBaggage($"abtesting.variant.{serviceName}", implementationName);
+                }
+
+                return (TService)ActivatorUtilities.CreateInstance(sp, _implementationTypes[pick]);
+            },
+            _lifetime);
+
+        _services.Add(descriptor);
     }
 }
