@@ -4,7 +4,7 @@
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <PackageId>Proxima.SelfEdu.DependencyInjection.AbTesting</PackageId>
-        <Version>1.0.0</Version>
+        <Version>1.1.0</Version>
         <Authors>Siarhei Tyshkavets</Authors>
         <Company>Siarhei Tyshkavets - Proxima Project</Company>
         <PackageTags>dependency_injection ab_testing</PackageTags>
@@ -22,7 +22,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <None Include="..\LICENSE;..\README.md" Pack="true" PackagePath="" />
+        <None Include="..\LICENSE" Pack="true" PackagePath="" />
+        <None Include="..\README.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>
