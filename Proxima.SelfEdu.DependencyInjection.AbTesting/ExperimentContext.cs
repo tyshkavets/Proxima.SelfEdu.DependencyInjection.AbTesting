@@ -7,7 +7,7 @@ public class ExperimentContext<TService> where TService : class
 {
     private readonly IServiceCollection _services;
     private readonly ServiceLifetime _lifetime;
-    private readonly IList<Type> _implementationTypes = new List<Type>();
+    private readonly IList<(double Weight, Type Type)> _implementationTypes = new List<(double Weight, Type Type)>();
 
     public ExperimentContext(IServiceCollection services, ServiceLifetime lifetime)
     {
@@ -15,9 +15,10 @@ public class ExperimentContext<TService> where TService : class
         _lifetime = lifetime;
     }
 
-    public ExperimentContext<TService> AddVariant<TImplementation>() where TImplementation : class, TService
+    public ExperimentContext<TService> AddVariant<TImplementation>(double weight = 1.0)
+        where TImplementation : class, TService
     {
-        _implementationTypes.Add(typeof(TImplementation));
+        _implementationTypes.Add((weight, typeof(TImplementation)));
         return this;
     }
 
@@ -28,21 +29,22 @@ public class ExperimentContext<TService> where TService : class
             return;
         }
 
+        var container = new WeightedContainer<Type>(_implementationTypes, new Random());
+
         var descriptor = new ServiceDescriptor(
             typeof(TService),
             sp =>
             {
-                var random = new Random();
-                var pick = random.Next(_implementationTypes.Count);
+                var result = container.NextRandom();
 
                 if (Activity.Current != null)
                 {
                     var serviceName = typeof(TService).Name.ToLower();
-                    var implementationName = _implementationTypes[pick].Name.ToLower();
+                    var implementationName = result.Name.ToLower();
                     Activity.Current.AddBaggage($"abtesting.variant.{serviceName}", implementationName);
                 }
 
-                return (TService)ActivatorUtilities.CreateInstance(sp, _implementationTypes[pick]);
+                return (TService)ActivatorUtilities.CreateInstance(sp, result);
             },
             _lifetime);
 
