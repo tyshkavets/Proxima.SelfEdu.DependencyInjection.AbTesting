@@ -41,7 +41,7 @@ public class ExperimentContext<TService> where TService : class
                 {
                     var serviceName = typeof(TService).Name.ToLower();
                     var implementationName = result.Name.ToLower();
-                    Activity.Current.AddBaggage($"abtesting.variant.{serviceName}", implementationName);
+                    Activity.Current.AddTag($"abtesting.variant.{serviceName}", implementationName);
                 }
 
                 return (TService)ActivatorUtilities.CreateInstance(sp, result);
